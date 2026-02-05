@@ -30,8 +30,6 @@ export default buildConfig({
   },
   i18n: {
     supportedLanguages: { nl, en },
-    defaultLocale: 'nl',
-    fallbackLocale: 'nl',
   },
   collections: [Users, Media, Products, Merken, Stoffen, Finishes, FinishRules, Vullingen, Vormen],
   editor: lexicalEditor(),
