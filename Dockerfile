@@ -1,20 +1,22 @@
 # To use this Dockerfile, you have to set `output: 'standalone'` in your next.config.mjs file.
 # From https://github.com/vercel/next.js/blob/canary/examples/with-docker/Dockerfile
 
-FROM node:22.17.0-alpine AS base
+FROM node:22.17.0-slim AS base
 
 # Install dependencies only when needed
 FROM base AS deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat python3 make g++
+# Install build dependencies
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
 # Install dependencies - use npm install for flexibility
 COPY package.json package-lock.json* ./
-# Install all dependencies including optional ones (sharp needs to be installed as optional)
+# Install all dependencies including optional ones
 RUN npm install --legacy-peer-deps --include=optional
-# Force sharp to use the correct platform binary for Alpine Linux (musl)
-RUN npm rebuild sharp || npm install --force --platform=linuxmusl --arch=x64 sharp@0.34.2
 
 
 # Rebuild the source code only when needed
