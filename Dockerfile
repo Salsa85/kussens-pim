@@ -9,11 +9,10 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat python3 make g++
 WORKDIR /app
 
-# Copy package files
+# Install dependencies - use npm install for flexibility
 COPY package.json package-lock.json* ./
+RUN npm install --legacy-peer-deps || npm install
 
-# Install dependencies
-RUN npm ci
 
 # Rebuild the source code only when needed
 FROM base AS builder
